@@ -28,16 +28,17 @@ EDK2_BIN			?= $(EDK2_PATH)/QEMU_EFI.fd
 QEMU_PATH			?= $(ROOT)/qemu
 
 SOC_TERM_PATH			?= $(ROOT)/soc_term
+STRACE_PATH			?= $(ROOT)/strace
 
 DEBUG = 1
 
 ################################################################################
 # Targets
 ################################################################################
-all: arm-tf qemu soc-term linux update_rootfs
+all: arm-tf qemu soc-term linux strace update_rootfs
 all-clean: arm-tf-clean busybox-clean linux-clean \
 	optee-os-clean optee-client-clean optee-linuxdriver-clean qemu-clean \
-	soc-term-clean check-clean
+	soc-term-clean check-clean strace-clean
 
 -include toolchain.mk
 
@@ -169,6 +170,24 @@ XTEST_PATCH_COMMON_FLAGS += CFG_ARM32=y
 xtest-patch: xtest-patch-common
 
 ################################################################################
+# strace
+################################################################################
+strace:
+ifneq ("$(wildcard $(STRACE_PATH))","")
+		cd $(STRACE_PATH) && \
+		./bootstrap && \
+		./configure --host=aarch64-linux-gnu CC=$(CROSS_COMPILE_NS_USER)gcc && \
+		CC=$(CROSS_COMPILE_NS_USER)gcc make
+endif
+
+strace-clean:
+ifneq ("$(wildcard $(STRACE_PATH))","")
+		CC=$(CROSS_COMPILE_NS_USER)gcc LD=$(CROSS_COMPILE_NS_USER)ld \
+			make -C $(STRACE_PATH) clean && \
+		rm -f $(STRACE_PATH)/Makefile $(STRACE_PATH)/configure
+endif
+
+################################################################################
 # Root FS
 ################################################################################
 .PHONY: filelist-tee
@@ -193,6 +212,9 @@ filelist-tee: xtest
 	@echo "file /lib/aarch64-linux-gnu/libteec.so.1.0 $(OPTEE_CLIENT_EXPORT)/lib/libteec.so.1.0 755 0 0" >> $(GEN_ROOTFS_FILELIST)
 	@echo "slink /lib/aarch64-linux-gnu/libteec.so.1 libteec.so.1.0 755 0 0" >> $(GEN_ROOTFS_FILELIST)
 	@echo "slink /lib/aarch64-linux-gnu/libteec.so libteec.so.1 755 0 0" >> $(GEN_ROOTFS_FILELIST)
+ifneq ("$(wildcard $(STRACE_PATH)/strace)","")
+	@echo "file /bin/strace $(STRACE_PATH)/strace 755 0 0" >> $(GEN_ROOTFS_FILELIST)
+endif
 
 update_rootfs: busybox optee-client optee-linuxdriver filelist-tee
 	cat $(GEN_ROOTFS_PATH)/filelist-final.txt $(GEN_ROOTFS_PATH)/filelist-tee.txt > $(GEN_ROOTFS_PATH)/filelist.tmp
