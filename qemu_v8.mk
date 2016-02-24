@@ -237,17 +237,15 @@ run-only:
 	$(call launch-terminal,54320,"Normal World")
 	$(call launch-terminal,54321,"Secure World")
 	$(call wait-for-ports,54320,54321)
-	cd $(ARM_TF_PATH)/build/qemu/debug
+	cd $(ARM_TF_PATH)/build/qemu/debug && \
 	$(QEMU_PATH)/aarch64-softmmu/qemu-system-aarch64 \
 		-nographic \
 		-serial tcp:localhost:54320 -serial tcp:localhost:54321 \
 		-machine virt,secure=on -cpu cortex-a57 -m 1057 -bios $(ARM_TF_PATH)/build/qemu/debug/bl1.bin \
 		-semihosting -d unimp \
-		-drive if=none,index=0,id=mydrive,file=$(GEN_ROOTFS_PATH)/filesystem.cpio.gz \
-		-device virtio-blk-device,drive=mydrive \
+		-initrd $(GEN_ROOTFS_PATH)/filesystem.cpio.gz \
 		-kernel $(LINUX_PATH)/arch/arm64/boot/Image \
 		-append 'console=ttyAMA0,38400 keep_bootcon root=/dev/vda2' 
-	cd $(ROOT)/build
 
 ifneq ($(filter check,$(MAKECMDGOALS)),)
 CHECK_DEPS := all
