@@ -67,10 +67,10 @@ ifeq ("$(wildcard $(EDK2_BIN))","")
 	mkdir -p $(EDK2_PATH)
 	wget -O $(EDK2_BIN) \
 		http://snapshots.linaro.org/components/kernel/leg-virt-tianocore-edk2-upstream/latest/QEMU-KERNEL-AARCH64/RELEASE_GCC49/QEMU_EFI.fd
+endif
 	mkdir -p $(ARM_TF_PATH)/build/qemu/debug
 	ln -sf $(OPTEE_OS_BIN) $(ARM_TF_PATH)/build/qemu/debug/bl32.bin
 	ln -sf $(EDK2_BIN) $(ARM_TF_PATH)/build/qemu/debug/bl33.bin
-endif
 
 ################################################################################
 # QEMU
