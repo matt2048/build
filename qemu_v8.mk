@@ -47,7 +47,7 @@ all-clean: arm-tf-clean busybox-clean linux-clean \
 ################################################################################
 # FIXME: Double check why Peter isn't using the bare metal compiler
 ARM_TF_EXPORTS ?= \
-	CFLAGS="-O0 -gdwarf-2 -Wno-array-bounds" \
+	CFLAGS="-O0 -gdwarf-2" \
 	CROSS_COMPILE="$(CCACHE)$(AARCH64_CROSS_COMPILE)"
 
 ARM_TF_FLAGS ?= \
