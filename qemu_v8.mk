@@ -1,21 +1,14 @@
--include common.mk
+################################################################################
+# Following variables defines how the NS_USER (Non Secure User - Client
+# Application), NS_KERNEL (Non Secure Kernel), S_KERNEL (Secure Kernel) and
+# S_USER (Secure User - TA) are compiled
+################################################################################
+override COMPILE_NS_USER   := 64
+override COMPILE_NS_KERNEL := 64
+override COMPILE_S_USER    := 64
+override COMPILE_S_KERNEL  := 64
 
-################################################################################
-# Mandatory definition to use common.mk
-################################################################################
-ifneq ($(CROSS_COMPILE),)
-CROSS_COMPILE_NS_USER		?= "$(CROSS_COMPILE)"
-CROSS_COMPILE_NS_KERNEL		?= "$(CROSS_COMPILE)"
-CROSS_COMPILE_S_USER		?= "$(CROSS_COMPILE)"
-CROSS_COMPILE_S_KERNEL		?= "$(CROSS_COMPILE)"
-else
-CROSS_COMPILE_NS_USER		?= "$(CCACHE)$(AARCH64_CROSS_COMPILE)"
-CROSS_COMPILE_NS_KERNEL		?= "$(CCACHE)$(AARCH64_CROSS_COMPILE)"
-CROSS_COMPILE_S_USER		?= "$(CCACHE)$(AARCH64_CROSS_COMPILE)"
-CROSS_COMPILE_S_KERNEL		?= "$(CCACHE)$(AARCH64_CROSS_COMPILE)"
-endif
-OPTEE_OS_BIN			?= $(OPTEE_OS_PATH)/out/arm-plat-vexpress/core/tee.bin
-OPTEE_OS_TA_DEV_KIT_DIR		?= $(OPTEE_OS_PATH)/out/arm-plat-vexpress/export-ta_arm64
+-include common.mk
 
 ################################################################################
 # Paths to git projects and various binaries
@@ -92,8 +85,8 @@ qemu-clean:
 ################################################################################
 # Busybox
 ################################################################################
-BUSYBOX_COMMON_TARGET = fvp-aarch64
-BUSYBOX_CLEAN_COMMON_TARGET = fvp-aarch64 clean
+BUSYBOX_COMMON_TARGET = fvp
+BUSYBOX_CLEAN_COMMON_TARGET = fvp clean
 BUSYBOX_COMMON_CCDIR = $(AARCH64_PATH)
 
 busybox: busybox-common
@@ -130,8 +123,6 @@ linux-cleaner: linux-cleaner-common
 # OP-TEE
 ################################################################################
 OPTEE_OS_COMMON_FLAGS += PLATFORM=vexpress-qemu_armv8a CFG_ARM64_core=y \
-			 CROSS_COMPILE_ta_arm64=$(AARCH64_CROSS_COMPILE) \
-			 CROSS_COMPILE_ta_arm32=$(AARCH32_CROSS_COMPILE) \
 			 DEBUG=0 CFG_PM_DEBUG=0 CFG_TEE_CORE_LOG_LEVEL=3
 optee-os: optee-os-common
 
