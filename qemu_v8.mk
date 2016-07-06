@@ -48,7 +48,7 @@ ARM_TF_FLAGS ?= \
 	BL33=$(EDK2_BIN) \
 	ARM_TSP_RAM_LOCATION=tdram \
 	PLAT=qemu \
-	DEBUG=1 \
+	DEBUG=0 \
 	LOG_LEVEL=50 \
 	ERROR_DEPRECATED=1 \
 	BL32_RAM_LOCATION=tdram \
@@ -68,9 +68,9 @@ ifeq ("$(wildcard $(EDK2_BIN))","")
 	wget -O $(EDK2_BIN) \
 		http://snapshots.linaro.org/components/kernel/leg-virt-tianocore-edk2-upstream/latest/QEMU-KERNEL-AARCH64/RELEASE_GCC49/QEMU_EFI.fd
 endif
-	mkdir -p $(ARM_TF_PATH)/build/qemu/debug
-	ln -sf $(OPTEE_OS_BIN) $(ARM_TF_PATH)/build/qemu/debug/bl32.bin
-	ln -sf $(EDK2_BIN) $(ARM_TF_PATH)/build/qemu/debug/bl33.bin
+	mkdir -p $(ARM_TF_PATH)/build/qemu/release
+	ln -sf $(OPTEE_OS_BIN) $(ARM_TF_PATH)/build/qemu/release/bl32.bin
+	ln -sf $(EDK2_BIN) $(ARM_TF_PATH)/build/qemu/release/bl33.bin
 
 ################################################################################
 # QEMU
@@ -252,11 +252,11 @@ run-only:
 	$(call launch-terminal,54320,"Normal World")
 	$(call launch-terminal,54321,"Secure World")
 	$(call wait-for-ports,54320,54321)
-	cd $(ARM_TF_PATH)/build/qemu/debug && \
+	cd $(ARM_TF_PATH)/build/qemu/release && \
 	$(QEMU_PATH)/aarch64-softmmu/qemu-system-aarch64 \
 		-nographic \
 		-serial tcp:localhost:54320 -serial tcp:localhost:54321 \
-		-machine virt,secure=on -cpu cortex-a57 -m 1057 -bios $(ARM_TF_PATH)/build/qemu/debug/bl1.bin \
+		-machine virt,secure=on -cpu cortex-a57 -m 1057 -bios $(ARM_TF_PATH)/build/qemu/release/bl1.bin \
 		-semihosting -d unimp \
 		-initrd $(GEN_ROOTFS_PATH)/filesystem.cpio.gz \
 		-kernel $(LINUX_PATH)/arch/arm64/boot/Image \
