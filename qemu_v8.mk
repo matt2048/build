@@ -30,7 +30,7 @@ DEBUG = 1
 ################################################################################
 all: arm-tf qemu soc-term linux strace update_rootfs
 all-clean: arm-tf-clean busybox-clean linux-clean \
-	optee-os-clean optee-client-clean optee-linuxdriver-clean qemu-clean \
+	optee-os-clean optee-client-clean qemu-clean \
 	soc-term-clean check-clean strace-clean
 
 -include toolchain.mk
@@ -133,12 +133,6 @@ optee-client: optee-client-common
 
 optee-client-clean: optee-client-clean-common
 
-OPTEE_LINUXDRIVER_COMMON_FLAGS += ARCH=arm64
-optee-linuxdriver: optee-linuxdriver-common
-
-OPTEE_LINUXDRIVER_CLEAN_COMMON_FLAGS += ARCH=arm64
-optee-linuxdriver-clean: optee-linuxdriver-clean-common
-
 ################################################################################
 # Soc-term
 ################################################################################
@@ -207,7 +201,7 @@ ifneq ("$(wildcard $(STRACE_PATH)/strace)","")
 	@echo "file /bin/strace $(STRACE_PATH)/strace 755 0 0" >> $(GEN_ROOTFS_FILELIST)
 endif
 
-update_rootfs: busybox optee-client optee-linuxdriver filelist-tee
+update_rootfs: busybox optee-client filelist-tee
 	cat $(GEN_ROOTFS_PATH)/filelist-final.txt $(GEN_ROOTFS_PATH)/filelist-tee.txt > $(GEN_ROOTFS_PATH)/filelist.tmp
 	cd $(GEN_ROOTFS_PATH); \
 		$(LINUX_PATH)/usr/gen_init_cpio $(GEN_ROOTFS_PATH)/filelist.tmp | gzip > $(GEN_ROOTFS_PATH)/filesystem.cpio.gz
