@@ -111,11 +111,11 @@ linux: linux-common
 
 linux-defconfig-clean: linux-defconfig-clean-common
 
-LINUX_CLEAN_COMMON_FLAGS += ARCH=arm
+LINUX_CLEAN_COMMON_FLAGS += ARCH=arm64
 
 linux-clean: linux-clean-common
 
-LINUX_CLEANER_COMMON_FLAGS += ARCH=arm
+LINUX_CLEANER_COMMON_FLAGS += ARCH=arm64
 
 linux-cleaner: linux-cleaner-common
 
